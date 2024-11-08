@@ -1,0 +1,31 @@
+### All commands were run in "kubernetes" directory
+### Setup kubectl
+aws eks --region us-east-1 update-kubeconfig --name lsc
+
+### Add charts
+$ helm repo add nfs-ganesha-server-and-external-provisioner https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+
+### Deploy NFS
+helm install nfs-server-provisioner nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner -f nfs_values.yaml
+
+### Deploy PVC
+kubectl apply -f .\pvc_deployment.yaml
+
+### Deploy NGINX
+kubectl apply -f .\nginx_deployment.yaml
+
+### Deploy Service
+kubectl apply -f .\service.yaml 
+
+### Deploy job
+kubectl apply -f .\mount_job.yaml
+
+### SSH to pod (debugging job)
+PS C:\Users\szymo\OneDrive\Pulpit\Uni\lsc\kubernetes> kubectl exec --stdin --tty nginx-deployment-d556bf558-8zwbc 
+-- /bin/bash
+
+
+### SIDE NOTE 
+Not sure if it was nginx 1.14 version problem or something else, 
+but after deploy site didn't appear, but index.html file was in correct directory.
+After updating it to latest version it started to work fine.

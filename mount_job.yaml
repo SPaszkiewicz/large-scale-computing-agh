@@ -1,0 +1,89 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: inject-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: alpine
+        image: alpine:latest
+        command: ["/bin/sh", "-c"]
+        volumeMounts:
+        - name: nfs-connection
+          mountPath: /mnt/nfs
+        args:
+          - |
+            html_content='
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Simple Site</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f0f0f0;
+                    }
+                    header {
+                        background-color: #4CAF50;
+                        color: white;
+                        text-align: center;
+                        padding: 1rem;
+                    }
+                    nav {
+                        text-align: center;
+                        margin: 10px 0;
+                    }
+                    nav a {
+                        margin: 0 15px;
+                        text-decoration: none;
+                        color: #4CAF50;
+                        font-weight: bold;
+                    }
+                    main {
+                        padding: 2rem;
+                        text-align: center;
+                    }
+                    footer {
+                        background-color: #4CAF50;
+                        color: white;
+                        text-align: center;
+                        padding: 1rem;
+                        position: fixed;
+                        width: 100%;
+                        bottom: 0;
+                    }
+                </style>
+            </head>
+            <body>
+                <header>
+                    <h1>Welcome to My Simple Site</h1>
+                </header>
+                <nav>
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+                <main>
+                    <h2>Hello, World!</h2>
+                    <p>This is a simple static website created with an auto-generated HTML file.</p>
+                </main>
+                <footer>
+                    <p>&copy; 2024 Simple Site. All rights reserved.</p>
+                </footer>
+            </body>
+            </html>
+            '
+            echo "$html_content" > index.html
+            
+            cp /index.html /mnt/nfs/ 
+      restartPolicy: Never
+      volumes:
+      - name: nfs-connection
+        persistentVolumeClaim:
+          claimName: dynamic-volume-claim

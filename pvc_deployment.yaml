@@ -1,0 +1,12 @@
+---
+    kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: dynamic-volume-claim
+    spec:
+      storageClassName: "nfs-lsc-sp"
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 500Mi
